@@ -16,256 +16,227 @@
     <meta property="og:image:height" content="630"/>
 
     <style>
-        :root {
-            --w: min(92vw, 560px);
-        }
+        :root { --w: min(92vw, 560px); }
 
-        body {
-            margin: 0;
-            font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
-            color: #f2f4f8;
-            min-height: 100vh;
-            display: grid;
-            align-items: end;
-            justify-items: center;
-            padding: 0 16px calc(18vh + env(safe-area-inset-bottom));
-
-
-            /* фон-картинка */
-            background: url("back_screen.png") center/cover no-repeat fixed;
+        body{
+            margin:0;
+            font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+            color:#f2f4f8;
+            min-height:100vh;
+            min-height:100dvh;
+            min-height:100svh;
+            display:grid;
+            place-items:center;
+            background:#0d1117 url("test_back.png") center/cover no-repeat;
+            padding-bottom: env(safe-area-inset-bottom, 0);
         }
 
         /* затемняем фон, чтобы UI читался */
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(1200px 600px at 50% 20%, rgba(31, 111, 235, .25), rgba(0, 0, 0, 0)),
-            rgba(15, 17, 21, .78);
-            z-index: -1;
+        body::before{
+            content:"";
+            position:fixed;
+            inset:0;
+            background:
+                    radial-gradient(1200px 600px at 50% 18%, rgba(31,111,235,.22), rgba(0,0,0,0)),
+                    rgba(12,14,20,.78);
+            z-index:-1;
         }
 
-        .wrap {
-            width: var(--w);
-            padding: 26px 16px 18px;
-            text-align: center;
+        .wrap{
+            width:var(--w);
+            padding:26px 16px calc(18px + env(safe-area-inset-bottom, 0));
+            text-align:center;
         }
 
-        #subtitle {
-            margin: 0 0 14px;
-            opacity: .9;
-            line-height: 1.35;
-            font-size: 15px;
+        #subtitle{
+            margin:0 0 14px;
+            opacity:.9;
+            line-height:1.35;
+            font-size:15px;
             min-height: 1.35em; /* чтобы не "прыгало" */
         }
 
-        .stage {
-            width: var(--w);
-            margin: 0 auto;
-            display: grid;
-            place-items: center;
+        /* стартовый экран: fullscreen overlay + bottom sheet */
+        .gate{
+            position:fixed;
+            inset:0;
+            z-index:10;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            padding:18vh 12px calc(16px + env(safe-area-inset-bottom, 0));
+            background: radial-gradient(1400px 680px at 50% 16%, rgba(31,111,235,.18), rgba(0,0,0,.38));
+            transition:opacity 260ms ease;
+        }
+        .gate.hidden{ opacity:0; pointer-events:none; visibility:hidden; }
+
+        .gate-inner{
+            width:min(92vw, 560px);
+            padding:22px 18px;
+            border-radius:18px;
+
+            background: rgba(18,22,31,.78);
+            backdrop-filter: blur(14px) saturate(150%);
+            -webkit-backdrop-filter: blur(14px) saturate(150%);
+            box-shadow:0 18px 70px rgba(0,0,0,.48);
+            transform: translateY(12vh);
+
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            align-items:center;
         }
 
-
-        /* стартовый экран */
-        .gate {
-            position: fixed;
-            inset: 0;
-            display: grid;
-            align-items: end;
-            justify-items: center;
-
-            /* фон затемняем чуть-чуть, чтобы читалась плашка */
-            background: rgba(0, 0, 0, .25);
-
-            z-index: 20;
-            transition: opacity 260ms ease;
-            padding: 0 16px calc(16vh + env(safe-area-inset-bottom));
+        .gate-title{
+            font-weight:800;
+            font-size:22px;
         }
-
-        .gate.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        body.opened .gate {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .gate-inner {
-            width: min(92%, 520px);
-            padding: 22px 18px;
-            border-radius: 18px;
-
-            background: rgba(20, 24, 34, 0.72);
-
-
-            border: 1px solid rgba(255, 255, 255, .14);
-            /*box-shadow: 0 22px 70px rgba(0, 0, 0, .45),*/
-            /*inset 0 1px 0 rgba(255, 255, 255, .10);*/
-
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .gate-title {
-            font-weight: 800;
-            font-size: 22px;
-        }
-
-        .gate-sub {
-            opacity: .88;
-            font-size: 14px;
-            line-height: 1.35;
+        .gate-sub{
+            opacity:.88;
+            font-size:14px;
+            line-height:1.35;
             max-width: 430px;
+            text-align:center;
         }
 
-        .btn {
-            border: 0;
-            border-radius: 14px;
-            padding: 12px 16px;
-            font-weight: 700;
-            cursor: pointer;
-            color: #fff;
-            background: #1f6feb;
-            box-shadow: 0 10px 26px rgba(31, 111, 235, .22);
-            text-decoration: none;
-            display: inline-block;
+        .btn{
+            border:0;
+            border-radius:14px;
+            padding:12px 16px;
+            font-weight:700;
+            cursor:pointer;
+            color:#fff;
+            background:#1f6feb;
+            box-shadow:0 10px 26px rgba(31,111,235,.22);
+            text-decoration:none;
+            display:inline-block;
+        }
+        .btn:active{ transform: translateY(1px); }
+
+        .stage{
+            margin:16px auto 0;
+            width:var(--w);
+            aspect-ratio:16/10;
+            perspective:1200px;
+            border-radius:18px;
+            overflow:hidden;
+            box-shadow:0 18px 60px rgba(0,0,0,.45);
+            background:rgba(255,255,255,.02);
+            position:relative;
+            display:grid;
+            place-items:center;
+            cursor:pointer;
+            user-select:none;
+            -webkit-user-select:none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
-        .btn:active {
-            transform: translateY(1px);
+        /* плёнка */
+        .film{
+            position:absolute;
+            inset:0;
+            z-index:5;
+            background: linear-gradient(120deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            opacity:1;
+            transform: translateY(0);
+            transition: transform 520ms cubic-bezier(.2,.9,.2,1), opacity 520ms cubic-bezier(.2,.9,.2,1);
+            pointer-events:none;
         }
-
-        /* лёгкая "плёнка" до открытия */
-        /*.film {*/
-        /*    position: absolute;*/
-        /*    inset: 0;*/
-        /*    z-index: 5;*/
-        /*    background: linear-gradient(120deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .06));*/
-        /*    opacity: 1;*/
-        /*    transform: translateY(0);*/
-        /*    transition: transform 520ms cubic-bezier(.2, .9, .2, 1), opacity 520ms cubic-bezier(.2, .9, .2, 1);*/
-        /*}*/
-
-        .film.off {
+        .film.off{
             transform: translateY(18px);
-            opacity: 0;
-            pointer-events: none;
+            opacity:0;
+            pointer-events:none;
         }
 
         /* карточка */
-        .card {
-            width: 100%;
-            height: 100%;
-            opacity: 0;
+        .card{
+            width:100%;
+            height:100%;
+            opacity:0;
             transform: translateY(18px) scale(.98);
             transition: opacity 240ms ease, transform 240ms ease;
-            pointer-events: none;
-            position: relative;
-            z-index: 4;
+            pointer-events:none;
+            position:relative;
+            z-index:4;
         }
-
-        .card.opened {
-            opacity: 1;
+        .card.opened{
+            opacity:1;
             transform: translateY(0) scale(1);
-            pointer-events: auto;
+            pointer-events:auto;
         }
 
-        .flip {
-            width: 100%;
-            height: 100%;
-            position: relative;
+        .flip{
+            width:100%;
+            height:100%;
+            position:relative;
             transform-style: preserve-3d;
             -webkit-transform-style: preserve-3d;
-            transition: transform 720ms cubic-bezier(.2, .8, .2, 1);
+            transition: transform 720ms cubic-bezier(.2,.8,.2,1);
             transform: rotateY(0deg);
             will-change: transform;
         }
+        .card.opened.flipped .flip{ transform: rotateY(180deg); }
 
-        .card.opened.flipped .flip {
-            transform: rotateY(180deg);
+        .face{
+            position:absolute;
+            inset:0;
+            backface-visibility:hidden;
+            -webkit-backface-visibility:hidden;
+            display:grid;
+            place-items:center;
+            background:#111318;
+        }
+        .face img{
+            width:100%;
+            height:100%;
+            object-fit:contain;
+            background:#111318;
+        }
+        .face.back{ transform: rotateY(180deg); }
+        .face.back img{ transform: scaleX(-1); }
+
+        .panel{
+            margin-top:14px;
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            align-items:center;
         }
 
-        .face {
-            position: absolute;
-            inset: 0;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            display: grid;
-            place-items: center;
-            background: #111318;
-        }
-
-        .face img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: #111318;
-        }
-
-        .face.back {
-            transform: rotateY(180deg);
-        }
-
-        .panel {
-            margin-top: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .hint {
-            font-size: 14px;
-            opacity: .78;
-            margin-top: 2px;
+        .hint{
+            font-size:14px;
+            opacity:.78;
+            margin-top:2px;
         }
 
         /* заметно вторичное действие */
-        .pdf-link {
-            display: inline-block;
-            padding: 8px 12px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, .14);
-            background: rgba(20, 24, 34, .18);
-            color: #cfe1ff;
-            text-decoration: none;
-            font-weight: 650;
-            opacity: .95;
+        .pdf-link{
+            display:inline-block;
+            padding:8px 12px;
+            border-radius:12px;
+            border:1px solid rgba(255,255,255,.14);
+            background: rgba(20,24,34,.18);
+            color:#cfe1ff;
+            text-decoration:none;
+            font-weight:650;
+            opacity:.95;
         }
+        .pdf-link:active{ transform: translateY(1px); }
 
-        .pdf-link:active {
-            transform: translateY(1px);
-        }
-
-        .hidden {
-            display: none;
-        }
+        .hidden{ display:none; }
     </style>
 </head>
 
 <body>
 <div class="wrap">
+    <p id="subtitle">Нажмите кнопку, чтобы открыть подарок.</p>
 
     <div class="stage" aria-label="Сертификат">
-        <!-- стартовый экран -->
-        <div id="gate" class="gate" role="button" aria-label="Открыть подарок">
-            <div class="gate-inner">
-                <div class="gate-title">Вам подарок</div>
-                <button id="openBtn" class="btn" type="button">Вам подарок</button>
-                <div class="gate-sub">
-                    (Если хочешь спросить мошенники мы или нет, то мы скажем нет. Мы кабачки. Из высшего общества)
-                </div>
-            </div>
-        </div>
+        <div id="film" class="film"></div>
 
-
-
-        <!-- карточка -->
         <div id="card" class="card" aria-live="polite">
             <div class="flip">
                 <div class="face front">
@@ -284,10 +255,21 @@
     </div>
 </div>
 
+<!-- fullscreen gate overlay -->
+<div id="gate" class="gate" aria-label="Стартовый экран">
+    <div class="gate-inner" role="button" aria-label="Открыть подарок" tabindex="0">
+        <div class="gate-title">Вам подарок</div>
+        <button id="openBtn" class="btn" type="button">Вам подарок</button>
+        <div class="gate-sub">
+            (Если хочешь спросить мошенники мы или нет, то мы скажем нет. Мы кабачки. Из высшего общества)
+        </div>
+    </div>
+</div>
+
 <script>
     let opened = false;   // прошли стартовый экран
     let flipped = false;  // на back (одноразово)
-    let touchConsumed = false;
+    let lastTouchTs = 0;
 
     // если нужно открывать телеграм со второго тапа на back — оставляем:
     const TG_URL = 'https://t.me/DmitrySozonov2';
@@ -299,18 +281,22 @@
     const pdfLink = document.getElementById('pdfLink');
 
     const gate = document.getElementById('gate');
+    const gateInner = document.querySelector('.gate-inner');
     const openBtn = document.getElementById('openBtn');
     const film = document.getElementById('film');
+    const hasPointer = 'PointerEvent' in window;
 
     // чтобы нажатие на PDF не улетало в обработчик stage
-    pdfLink.addEventListener('click', (e) => e.stopPropagation());
-    pdfLink.addEventListener('touchend', (e) => e.stopPropagation());
+    const stopPropagation = (e) => e.stopPropagation();
+    pdfLink.addEventListener('pointerup', stopPropagation);
+    pdfLink.addEventListener('click', stopPropagation);
 
-    function render() {
-        if (!opened) {
-            card.classList.remove('opened', 'flipped');
+    function render(){
+        if(!opened){
+            card.classList.remove('opened','flipped');
             film.classList.remove('off');
             gate.classList.remove('hidden');
+            gate.removeAttribute('aria-hidden');
             pdfLink.classList.add('hidden');
 
             subtitle.textContent = 'Нажмите кнопку, чтобы открыть подарок.';
@@ -322,8 +308,9 @@
         card.classList.add('opened');
         film.classList.add('off');
         gate.classList.add('hidden');
+        gate.setAttribute('aria-hidden','true');
 
-        if (flipped) {
+        if(flipped){
             card.classList.add('flipped');
             subtitle.textContent = 'Готово.';
             hint.textContent = 'Сертификат открыт';
@@ -336,21 +323,21 @@
         }
     }
 
-    function openGift() {
-        if (opened) return;
+    function openGift(){
+        if(opened) return;
         opened = true;
         render();
     }
 
-    function openTelegram() {
+    function openTelegram(){
         // в этой же вкладке
         window.location.href = TG_URL;
     }
 
-    function handleTap() {
-        if (!opened) return;
+    function handleTap(){
+        if(!opened) return;
 
-        if (!flipped) {
+        if(!flipped){
             flipped = true;
             render();
             return;
@@ -360,32 +347,51 @@
         openTelegram();
     }
 
-    openBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        openGift();
-    });
-
-    gate.addEventListener('click', (e) => {
-        e.preventDefault();
-        openGift();
-    });
-
-    stage.addEventListener('touchend', (event) => {
-        if (event.target.closest('a') || event.target.closest('button')) return;
-        touchConsumed = true;
+    const handleOpen = (event) => {
         event.preventDefault();
-        handleTap();
-    }, {passive: false});
+        event.stopPropagation();
+        openGift();
+    };
 
-    stage.addEventListener('click', (event) => {
-        if (event.target.closest('a') || event.target.closest('button')) return;
-        if (touchConsumed) {
-            touchConsumed = false;
-            return;
+    if(hasPointer){
+        openBtn.addEventListener('pointerup', handleOpen);
+        gateInner.addEventListener('pointerup', handleOpen);
+    } else {
+        openBtn.addEventListener('touchend', handleOpen, { passive:false });
+        gateInner.addEventListener('touchend', handleOpen, { passive:false });
+        openBtn.addEventListener('click', handleOpen);
+        gateInner.addEventListener('click', handleOpen);
+    }
+    gateInner.addEventListener('keydown', (event) => {
+        if(event.key === 'Enter' || event.key === ' '){
+            handleOpen(event);
         }
-        handleTap();
     });
+
+    const shouldIgnore = (target) => target.closest('a') || target.closest('button');
+
+    const onStageTap = (event) => {
+        if(shouldIgnore(event.target)) return;
+        handleTap();
+    };
+
+    if(hasPointer){
+        stage.addEventListener('pointerup', (event) => {
+            if(event.pointerType === 'mouse' && event.button !== 0) return;
+            onStageTap(event);
+        });
+    } else {
+        stage.addEventListener('touchend', (event) => {
+            lastTouchTs = Date.now();
+            event.preventDefault();
+            onStageTap(event);
+        }, { passive:false });
+
+        stage.addEventListener('click', (event) => {
+            if(Date.now() - lastTouchTs < 450) return;
+            onStageTap(event);
+        });
+    }
 
     render();
 </script>
