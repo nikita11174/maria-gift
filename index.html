@@ -6,164 +6,186 @@
     <meta name="robots" content="noindex, nofollow"/>
     <title>Подарок</title>
 
+    <!-- OG preview: cover (не сертификат) -->
+    <meta property="og:title" content="Вам подарок"/>
+    <meta property="og:description" content="Нажмите, чтобы открыть"/>
+    <meta property="og:type" content="website"/>
     <meta property="og:image" content="https://nikita11174.github.io/maria-gift/cover.png?v=3"/>
     <meta property="og:image:type" content="image/png"/>
     <meta property="og:image:width" content="1200"/>
     <meta property="og:image:height" content="630"/>
 
-
     <style>
-        :root {
-            --w: min(92vw, 560px);
+        :root { --w: min(92vw, 560px); }
+
+        body{
+            margin:0;
+            font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+            background: radial-gradient(1200px 600px at 50% 20%, rgba(31,111,235,.25), rgba(0,0,0,0)), #0f1115;
+            color:#f2f4f8;
+            min-height:100vh;
+            display:grid;
+            place-items:center;
         }
 
-        body {
-            margin: 0;
-            font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
-            background: radial-gradient(1200px 600px at 50% 20%, rgba(31, 111, 235, .25), rgba(0, 0, 0, 0)), #0f1115;
-            color: #f2f4f8;
-            min-height: 100vh;
-            display: grid;
-            place-items: center;
+        .wrap{ width:var(--w); padding:26px 16px 18px; text-align:center; }
+        h1{ font-size:22px; margin:0 0 10px; font-weight:700; }
+        p{ margin:0 0 14px; opacity:.9; line-height:1.35; }
+
+        .stage{
+            margin:16px auto 0;
+            width:var(--w);
+            aspect-ratio:16/10;
+            perspective:1200px;
+            border-radius:18px;
+            overflow:hidden;
+            box-shadow:0 18px 60px rgba(0,0,0,.45);
+            background:rgba(255,255,255,.06);
+            position:relative;
+            display:grid;
+            place-items:center;
+            cursor:pointer;
+            user-select:none;
+            -webkit-user-select:none;
         }
 
-        .wrap {
-            width: var(--w);
-            padding: 26px 16px 18px;
-            text-align: center;
+        /* стартовый экран (2.1) */
+        .gate{
+            position:absolute;
+            inset:0;
+            display:grid;
+            place-items:center;
+            background: rgba(17,19,24,.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 6;
+            transition: opacity 260ms ease;
+        }
+        .gate.hidden{ opacity:0; pointer-events:none; }
+
+        .gate-inner{
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            align-items:center;
+            padding:18px 14px;
+        }
+        .gate-title{ font-weight:800; font-size:22px; }
+        .gate-sub{ opacity:.88; font-size:14px; }
+
+        /* плёнка/скретч-слой (3.1) */
+        .film{
+            position:absolute;
+            inset:0;
+            z-index:5;
+            background: linear-gradient(120deg, rgba(255,255,255,.14), rgba(255,255,255,.06));
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            transform: translateY(0);
+            opacity:1;
+            transition: transform 520ms cubic-bezier(.2,.9,.2,1), opacity 520ms cubic-bezier(.2,.9,.2,1);
+        }
+        .film.off{
+            transform: translateY(18px);
+            opacity:0;
+            pointer-events:none;
         }
 
-        h1 {
-            font-size: 22px;
-            margin: 0 0 10px;
-            font-weight: 700;
-        }
-
-        p {
-            margin: 0 0 14px;
-            opacity: .9;
-            line-height: 1.35;
-        }
-
-        .stage {
-            margin: 16px auto 0;
-            width: var(--w);
-            aspect-ratio: 16 / 10;
-            perspective: 1200px;
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 18px 60px rgba(0, 0, 0, .45);
-            background: rgba(255, 255, 255, .06);
-            position: relative;
-            display: grid;
-            place-items: center;
-            cursor: pointer;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        /* Внешний контейнер только для появления (не трогаем rotateY здесь) */
-        .card {
-            width: 100%;
-            height: 100%;
-            opacity: 0;
+        /* контейнер карточки: появление + лёгкая пружинка (1.1) */
+        .card{
+            width:100%;
+            height:100%;
+            opacity:0;
             transform: translateY(18px) scale(.98);
             transition: opacity 240ms ease, transform 240ms ease;
-            pointer-events: none;
+            pointer-events:none;
+            position:relative;
+            z-index:4;
         }
-
-        .card.opened {
-            opacity: 1;
+        .card.opened{
+            opacity:1;
             transform: translateY(0) scale(1);
-            pointer-events: auto;
-            animation: popIn 520ms cubic-bezier(.2, .9, .2, 1) both;
+            pointer-events:auto;
+            animation: popIn 520ms cubic-bezier(.2,.9,.2,1) both;
         }
+        @keyframes popIn{ from{opacity:0;} to{opacity:1;} }
 
-        @keyframes popIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        /* ВОТ ТУТ flip: вращается только inner */
-        .flip {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            -webkit-transform-style: preserve-3d;
-            transition: transform 700ms cubic-bezier(.2, .8, .2, 1);
+        /* Flip: вращается inner */
+        .flip{
+            width:100%;
+            height:100%;
+            position:relative;
+            transform-style:preserve-3d;
+            -webkit-transform-style:preserve-3d;
+            transition: transform 720ms cubic-bezier(.2,.8,.2,1);
             transform: rotateY(0deg);
+            will-change: transform;
         }
-
-        .card.opened.flipped .flip {
+        .card.opened.flipped .flip{
             transform: rotateY(180deg);
         }
 
-        .face {
-            position: absolute;
-            inset: 0;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            display: grid;
-            place-items: center;
-            background: #111318;
+        .face{
+            position:absolute;
+            inset:0;
+            backface-visibility:hidden;
+            -webkit-backface-visibility:hidden;
+            display:grid;
+            place-items:center;
+            background:#111318;
         }
+        .face img{
+            width:100%;
+            height:100%;
+            object-fit:contain;
+            background:#111318;
+        }
+        .face.back{ transform: rotateY(180deg); }
 
-        .face img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: #111318;
+        .panel{
+            margin-top:14px;
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            align-items:center;
         }
-
-        .face.back {
-            transform: rotateY(180deg);
+        .btn{
+            border:0;
+            border-radius:14px;
+            padding:12px 16px;
+            font-weight:700;
+            cursor:pointer;
+            color:#fff;
+            background:#1f6feb;
+            box-shadow:0 10px 26px rgba(31,111,235,.22);
+            text-decoration:none;
+            display:inline-block;
         }
-
-        .panel {
-            margin-top: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .btn {
-            border: 0;
-            border-radius: 14px;
-            padding: 12px 16px;
-            font-weight: 700;
-            cursor: pointer;
-            color: #fff;
-            background: #1f6feb;
-            box-shadow: 0 10px 26px rgba(31, 111, 235, .22);
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .hint {
-            font-size: 14px;
-            opacity: .78;
-            margin-top: 2px;
-        }
+        .hidden{ display:none; }
+        .hint{ font-size:14px; opacity:.78; margin-top:2px; }
     </style>
 </head>
 
 <body>
 <div class="wrap">
     <h1>Вам подарок</h1>
-    <p id="subtitle">Нажмите на сертификат, чтобы перевернуть.</p>
+    <p id="subtitle">Нажмите кнопку, чтобы открыть подарок.</p>
 
     <div class="stage" aria-label="Сертификат">
-        <div id="card" class="card opened" aria-live="polite">
+        <!-- стартовый экран -->
+        <div id="gate" class="gate" role="button" aria-label="Открыть подарок">
+            <div class="gate-inner">
+                <div class="gate-title">Вам подарок</div>
+                <div class="gate-sub">Нажмите, чтобы открыть</div>
+                <button id="openBtn" class="btn" type="button">Открыть подарок</button>
+            </div>
+        </div>
+
+        <!-- плёнка -->
+        <div id="film" class="film"></div>
+
+        <!-- карточка (изначально скрыта) -->
+        <div id="card" class="card" aria-live="polite">
             <div class="flip">
                 <div class="face front">
                     <img src="front.png" alt="Лицевая сторона"/>
@@ -177,12 +199,13 @@
 
     <div class="panel">
         <a id="pdfBtn" class="btn hidden" href="certificate.pdf" download>Скачать PDF</a>
-        <div id="hint" class="hint">Шаг 1 из 2</div>
+        <div id="hint" class="hint">Шаг 0 из 2</div>
     </div>
 </div>
 
 <script>
-    let flipped = false;
+    let opened = false;         // подарок открыт (прошли стартовый экран)
+    let flipped = false;        // перевёрнут на back (одноразово)
     let touchConsumed = false;
 
     const TG_URL = 'https://t.me/DmitrySozonov2';
@@ -193,22 +216,36 @@
     const hint = document.getElementById('hint');
     const pdfBtn = document.getElementById('pdfBtn');
 
-    pdfBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-    });
-    pdfBtn.addEventListener('touchend', (e) => {
-        e.stopPropagation();
-    });
+    const gate = document.getElementById('gate');
+    const openBtn = document.getElementById('openBtn');
+    const film = document.getElementById('film');
 
+    // чтобы нажатие на PDF не улетало в обработчик stage
+    pdfBtn.addEventListener('click', (e) => e.stopPropagation());
+    pdfBtn.addEventListener('touchend', (e) => e.stopPropagation());
 
-    function render() {
-        if (flipped) {
-            card.classList.add('opened', 'flipped');
+    function render(){
+        if (!opened){
+            card.classList.remove('opened','flipped');
+            film.classList.remove('off');
+            gate.classList.remove('hidden');
+            pdfBtn.classList.add('hidden');
+            subtitle.textContent = 'Нажмите кнопку, чтобы открыть подарок.';
+            hint.textContent = 'Шаг 0 из 2';
+            return;
+        }
+
+        // opened=true
+        card.classList.add('opened');
+        film.classList.add('off');
+        gate.classList.add('hidden');
+
+        if (flipped){
+            card.classList.add('flipped');
             subtitle.textContent = 'Нажмите на сертификат, чтобы открыть Telegram.';
             hint.textContent = 'Сертификат открыт';
             pdfBtn.classList.remove('hidden');
         } else {
-            card.classList.add('opened');
             card.classList.remove('flipped');
             subtitle.textContent = 'Нажмите на сертификат, чтобы перевернуть.';
             hint.textContent = 'Шаг 1 из 2';
@@ -216,12 +253,20 @@
         }
     }
 
-    function openTelegram() {
-        window.location.href = TG_URL;  // открывает в текущей вкладке
+    function openGift(){
+        if (opened) return;
+        opened = true;
+        render();
     }
 
-    function handleTap() {
-        if (!flipped) {
+    function openTelegram(){
+        // Открываем в этой же вкладке (требование №5)
+        window.location.href = TG_URL;
+    }
+
+    function handleTap(){
+        if (!opened) return;
+        if (!flipped){
             flipped = true;
             render();
             return;
@@ -229,14 +274,29 @@
         openTelegram();
     }
 
+    openBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openGift();
+    });
+
+    // тап по затемнению тоже открывает (удобно)
+    gate.addEventListener('click', (e) => {
+        e.preventDefault();
+        openGift();
+    });
+
     stage.addEventListener('touchend', (event) => {
+        if (event.target.closest('a')) return;
         touchConsumed = true;
         event.preventDefault();
+        // если ещё не opened — игнорируем (только кнопка)
         handleTap();
-    }, {passive: false});
+    }, { passive: false });
 
-    stage.addEventListener('click', () => {
-        if (touchConsumed) {
+    stage.addEventListener('click', (event) => {
+        if (event.target.closest('a')) return;
+        if (touchConsumed){
             touchConsumed = false;
             return;
         }
@@ -245,6 +305,5 @@
 
     render();
 </script>
-
 </body>
 </html>
