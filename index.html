@@ -185,19 +185,30 @@
     let flipped = false;
     let touchConsumed = false;
 
+    const TG_URL = 'https://t.me/DmitrySozonov2';
+
     const stage = document.querySelector('.stage');
     const card = document.getElementById('card');
     const subtitle = document.getElementById('subtitle');
     const hint = document.getElementById('hint');
     const pdfBtn = document.getElementById('pdfBtn');
 
+    pdfBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+    pdfBtn.addEventListener('touchend', (e) => {
+        e.stopPropagation();
+    });
+
+
     function render() {
         if (flipped) {
-            card.classList.add('flipped');
-            subtitle.textContent = 'Готово.';
+            card.classList.add('opened', 'flipped');
+            subtitle.textContent = 'Нажмите на сертификат, чтобы открыть Telegram.';
             hint.textContent = 'Сертификат открыт';
             pdfBtn.classList.remove('hidden');
         } else {
+            card.classList.add('opened');
             card.classList.remove('flipped');
             subtitle.textContent = 'Нажмите на сертификат, чтобы перевернуть.';
             hint.textContent = 'Шаг 1 из 2';
@@ -205,17 +216,23 @@
         }
     }
 
-    function flipOnce() {
-        if (flipped) return;
-        flipped = true;
-        render();
+    function openTelegram() {
+        window.location.href = TG_URL;  // открывает в текущей вкладке
     }
 
-    stage.addEventListener('touchend', (e) => {
-        if (flipped) return;
+    function handleTap() {
+        if (!flipped) {
+            flipped = true;
+            render();
+            return;
+        }
+        openTelegram();
+    }
+
+    stage.addEventListener('touchend', (event) => {
         touchConsumed = true;
-        e.preventDefault();
-        flipOnce();
+        event.preventDefault();
+        handleTap();
     }, {passive: false});
 
     stage.addEventListener('click', () => {
@@ -223,10 +240,11 @@
             touchConsumed = false;
             return;
         }
-        flipOnce();
+        handleTap();
     });
 
     render();
 </script>
+
 </body>
 </html>
