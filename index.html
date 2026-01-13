@@ -32,17 +32,6 @@
             padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
         }
 
-        /* затемняем фон, чтобы UI читался */
-        body::before{
-            content:"";
-            position:fixed;
-            inset:0;
-            background:
-                    radial-gradient(1200px 600px at 50% 18%, rgba(31,111,235,.22), rgba(0,0,0,0)),
-                    rgba(12,14,20,.78);
-            z-index:-1;
-        }
-
         .wrap{
             width:100%;
             max-width:var(--w);
@@ -193,6 +182,13 @@
             margin-top:2px;
         }
 
+        body::before{
+            content:"";
+            position:fixed;
+            inset:0;
+            background:transparent;
+            z-index:-1;
+        }
         /* заметно вторичное действие */
         .pdf-link{
             display:inline-block;
