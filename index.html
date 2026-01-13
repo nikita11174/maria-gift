@@ -30,11 +30,13 @@
             display: flex;
             justify-content: center;
             align-items: stretch;
+
             background-color: #0d1117;
             background-image: url("test_back_1.png");
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
+
             padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
         }
 
@@ -47,7 +49,6 @@
                 background-repeat: no-repeat;
             }
         }
-
 
         .wrap {
             width: 100%;
@@ -63,22 +64,23 @@
             width: 100%;
             display: grid;
             justify-items: center;
-            /* занимать доступную высоту экрана */
+
             flex: 1;
-            align-content: end; /* прижимаем контент вниз */
-            padding: 10vh 0 3vh; /* “ниже”, но без убийства экрана */
+            align-content: end;
+            padding: 10vh 0 3vh;
             box-sizing: border-box;
         }
-
 
         .glass-card {
             width: 100%;
             aspect-ratio: 3 / 2;
             border-radius: 18px;
+
             background: transparent;
             backdrop-filter: none;
             -webkit-backdrop-filter: none;
             box-shadow: none;
+
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -265,6 +267,7 @@
             display: none;
         }
 
+        /* ===== Rainbow / neon text ===== */
         @keyframes rainbowShift {
             0% {
                 background-position: 0 50%;
@@ -302,6 +305,150 @@
             0 0 32px rgba(255, 0, 200, .18);
         }
 
+        /* ===== Meme modal ===== */
+        .modal.hidden {
+            display: none;
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: grid;
+            place-items: center;
+            padding: 18px;
+        }
+
+        .modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+        }
+
+        .modal-card {
+            position: relative;
+            width: min(92vw, 520px);
+            border-radius: 18px;
+            padding: 18px 16px;
+            background: rgba(0, 0, 0, .62);
+            box-shadow: 0 20px 70px rgba(0, 0, 0, .55);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .modal-title {
+            font-weight: 900;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .modal-text {
+            font-size: 14px;
+            line-height: 1.35;
+            opacity: .95;
+            margin-bottom: 14px;
+        }
+
+        /* ===== S0: pulse button + soft glow ===== */
+        @keyframes pulseBtn {
+            0% {
+                transform: translateY(0) scale(1);
+                box-shadow: 0 10px 26px rgba(31, 111, 235, .22);
+            }
+            50% {
+                transform: translateY(-1px) scale(1.03);
+                box-shadow: 0 14px 34px rgba(31, 111, 235, .40);
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                box-shadow: 0 10px 26px rgba(31, 111, 235, .22);
+            }
+        }
+
+        @keyframes breatheGlow {
+            0% {
+                filter: drop-shadow(0 0 0 rgba(255, 255, 255, .0));
+                opacity: .95;
+            }
+            50% {
+                filter: drop-shadow(0 0 10px rgba(120, 220, 255, .22));
+                opacity: 1;
+            }
+            100% {
+                filter: drop-shadow(0 0 0 rgba(255, 255, 255, .0));
+                opacity: .95;
+            }
+        }
+
+        /* Включаем только на S0 (пока gate виден) */
+        #gateCard:not(.hidden) #openBtn {
+            animation: pulseBtn 1.35s ease-in-out infinite;
+        }
+
+        #gateCard:not(.hidden).rainbow-text,
+        #gateCard:not(.hidden) .rainbow-text {
+            animation: rainbowShift 3.2s linear infinite, breatheGlow 2.2s ease-in-out infinite;
+        }
+
+        /* ===== S1: shine sweep по карте ===== */
+        .stage {
+            position: relative; /* у тебя уже есть, оставь */
+        }
+
+        .stage::after {
+            content: "";
+            position: absolute;
+            inset: -30%;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateX(-60%) rotate(18deg);
+            background: linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, .12) 45%,
+                    rgba(255, 255, 255, .28) 50%,
+                    rgba(255, 255, 255, .12) 55%,
+                    rgba(255, 255, 255, 0) 100%
+            );
+        }
+
+        /* когда нужно проиграть бликом один раз */
+        .stage.shine::after {
+            opacity: 1;
+            animation: shineSweep 900ms ease-out 1;
+        }
+
+        @keyframes shineSweep {
+            0% {
+                transform: translateX(-60%) rotate(18deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(60%) rotate(18deg);
+                opacity: 0;
+            }
+        }
+
+        /* уважим reduce motion */
+        @media (prefers-reduced-motion: reduce) {
+            #gateCard:not(.hidden) #openBtn {
+                animation: none;
+            }
+
+            #gateCard:not(.hidden).rainbow-text,
+            #gateCard:not(.hidden) .rainbow-text {
+                animation: none;
+            }
+
+            .stage.shine::after {
+                animation: none;
+                opacity: 0;
+            }
+        }
 
     </style>
 </head>
@@ -309,13 +456,9 @@
 <body>
 <div class="wrap">
     <div class="slot">
-
         <div id="gateCard" class="glass-card rainbow-text neon-glow" aria-label="Вам подарок">
-<!--            <div class="gate-title">Вам подарок</div>-->
-            <button id="openBtn" class="btn rainbow-text neon-glow " type="button">Нажми на кнопку и получи подарок</button>
-<!--            <div class="gate-sub rainbow-text neon-glow">-->
-<!--                (Если хочешь спросить мошенники мы или нет, то мы скажем нет. Мы кабачки. Из высшего общества)-->
-<!--            </div>-->
+            <button id="openBtn" class="btn rainbow-text neon-glow" type="button">Нажми на кнопку и получи подарок
+            </button>
         </div>
 
         <div class="stage hidden" aria-label="Сертификат">
@@ -339,9 +482,25 @@
     </div>
 </div>
 
+<!-- Meme modal -->
+<div id="memeModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="memeTitle">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card">
+        <div id="memeTitle" class="modal-title rainbow-text neon-glow">Проверка на мошенников</div>
+        <div class="modal-text">
+            Если хочешь спросить «мошенники мы или нет» — нет.<br/>
+            Мы кабачки. Из высшего общества.
+        </div>
+        <button id="memeOk" class="btn" type="button">ОК, доверяю кабачкам</button>
+    </div>
+</div>
+
 <script>
     let opened = false;
     let flipped = false;
+
+    // промежуточное состояние: нажали кнопку, ждём "ОК"
+    let pendingOpen = false;
 
     const TG_URL = 'https://t.me/DmitrySozonov2';
 
@@ -356,9 +515,21 @@
     const openBtn = document.getElementById('openBtn');
     const hasPointer = 'PointerEvent' in window;
 
+    const memeModal = document.getElementById('memeModal');
+    const memeOk = document.getElementById('memeOk');
+
     const stopPropagation = (e) => e.stopPropagation();
     pdfLink.addEventListener('pointerup', stopPropagation);
     pdfLink.addEventListener('click', stopPropagation);
+
+    function showMemeModal() {
+        pendingOpen = true;
+        memeModal.classList.remove('hidden');
+    }
+
+    function hideMemeModal() {
+        memeModal.classList.add('hidden');
+    }
 
     function render() {
         if (!opened) {
@@ -366,6 +537,7 @@
             stage.classList.add('hidden');
             card.classList.remove('opened', 'flipped');
             pdfLink.classList.add('hidden');
+
             panel.classList.add('hidden');
             subtitle.textContent = '';
             subtitle.classList.add('hidden');
@@ -403,7 +575,13 @@
         }
         if (opened) return;
         opened = true;
+
+// S1: блик по карте один раз
+        stage.classList.add('shine');
+        setTimeout(() => stage.classList.remove('shine'), 1000);
+
         render();
+
     }
 
     function handleTap() {
@@ -419,12 +597,44 @@
         window.location.href = TG_URL;
     }
 
+    // Кнопка: показываем модалку, а не открываем подарок сразу
+    const onOpenClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        showMemeModal();
+    };
 
     if (hasPointer) {
-        openBtn.addEventListener('pointerup', openGift);
+        openBtn.addEventListener('pointerup', onOpenClick);
     } else {
-        openBtn.addEventListener('click', openGift);
+        openBtn.addEventListener('click', onOpenClick);
     }
+
+    // ОК в модалке -> закрыть и открыть подарок
+    memeOk.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        hideMemeModal();
+        if (pendingOpen) {
+            pendingOpen = false;
+            openGift();
+        }
+    });
+
+    // клик по затемнению -> тоже закрыть и открыть подарок
+    memeModal.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal-backdrop')) {
+            e.preventDefault();
+            e.stopPropagation();
+            hideMemeModal();
+            if (pendingOpen) {
+                pendingOpen = false;
+                openGift();
+            }
+        } else {
+            e.stopPropagation();
+        }
+    });
 
     const shouldIgnore = (target) => target.closest('a') || target.closest('button');
 
@@ -446,4 +656,3 @@
 </script>
 </body>
 </html>
-
