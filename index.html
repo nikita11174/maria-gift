@@ -21,18 +21,23 @@
         }
 
         body {
-            margin: 0;
-            font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
-            color: #f2f4f8;
-            min-height: 100vh;
-            min-height: 100dvh;
-            min-height: 100svh;
-            display: flex;
-            justify-content: center;
-            align-items: stretch;
-            background: #0d1117 url("test_back_1.png") center/cover no-repeat;
-            padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
+            background-color: #0d1117;
+            background-image: url("test_back_1.png");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
         }
+
+        /* Мобилка, портрет: показать фон целиком */
+        @media (max-width: 480px) and (orientation: portrait) {
+            body {
+                background-image: url("test_back_mobile.png");
+                background-size: contain;
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+        }
+
 
         .wrap {
             width: 100%;
