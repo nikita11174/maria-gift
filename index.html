@@ -57,9 +57,6 @@
             flex-direction: column;
             align-items: center;
             gap: 6px;
-            min-height: 100vh;
-            min-height: 100dvh;
-            min-height: 100svh;
         }
 
         .slot {
@@ -69,7 +66,7 @@
             /* занимать доступную высоту экрана */
             flex: 1;
             align-content: end; /* прижимаем контент вниз */
-            padding: 10vh 0 6vh; /* “ниже”, но без убийства экрана */
+            padding: 10vh 0 3vh; /* “ниже”, но без убийства экрана */
             box-sizing: border-box;
         }
 
@@ -270,13 +267,13 @@
 
         @keyframes rainbowShift {
             0% {
-                background-position: 0% 50%;
+                background-position: 0 50%;
             }
             50% {
                 background-position: 100% 50%;
             }
             100% {
-                background-position: 0% 50%;
+                background-position: 0 50%;
             }
         }
 
@@ -314,11 +311,11 @@
     <div class="slot">
 
         <div id="gateCard" class="glass-card rainbow-text neon-glow" aria-label="Вам подарок">
-            <div class="gate-title">Вам подарок</div>
-            <button id="openBtn" class="btn neon-glow" type="button">Нажми на кнопку и получи подарок</button>
-            <div class="gate-sub rainbow-text neon-glow">
-                (Если хочешь спросить мошенники мы или нет, то мы скажем нет. Мы кабачки. Из высшего общества)
-            </div>
+<!--            <div class="gate-title">Вам подарок</div>-->
+            <button id="openBtn" class="btn rainbow-text neon-glow " type="button">Нажми на кнопку и получи подарок</button>
+<!--            <div class="gate-sub rainbow-text neon-glow">-->
+<!--                (Если хочешь спросить мошенники мы или нет, то мы скажем нет. Мы кабачки. Из высшего общества)-->
+<!--            </div>-->
         </div>
 
         <div class="stage hidden" aria-label="Сертификат">
