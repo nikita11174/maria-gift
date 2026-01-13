@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ru">
 <head>
     <meta charset="utf-8"/>
@@ -39,7 +39,7 @@
             display:flex;
             flex-direction:column;
             align-items:center;
-            gap:14px;
+            gap:8px;
             min-height:100vh;
             min-height:100dvh;
             min-height:100svh;
@@ -50,17 +50,17 @@
             display:grid;
             justify-items:center;
             padding-top:24vh;
-            padding-bottom:10vh;
+            padding-bottom:2vh;
         }
 
         .glass-card{
             width:100%;
             aspect-ratio:16/10;
             border-radius:18px;
-            background: rgba(18,22,31,.68);
-            backdrop-filter: blur(14px) saturate(140%);
-            -webkit-backdrop-filter: blur(14px) saturate(140%);
-            box-shadow:0 18px 70px rgba(0,0,0,.48);
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            box-shadow:none;
             display:flex;
             flex-direction:column;
             gap:12px;
@@ -158,29 +158,40 @@
             background:#111318;
         }
         .face.back{ transform: rotateY(180deg); }
-        .face.back img{ transform: scaleX(-1); }
 
         .panel{
             display:flex;
             flex-direction:column;
-            gap:10px;
+            gap:8px;
             align-items:center;
             text-align:center;
+            margin-top:-6px;
         }
+        .panel.hidden{ display:none; }
 
         .subtitle{
             margin:0;
-            opacity:.9;
-            line-height:1.35;
+            opacity:1;
+            line-height:1.4;
             font-size:15px;
-            min-height: 1.35em;
+            min-height: 1.4em;
+            padding:8px 12px;
+            border-radius:12px;
+            background: rgba(0,0,0,.45);
+            color:#f8fbff;
+            text-shadow:0 2px 6px rgba(0,0,0,.55);
+            display:inline-block;
         }
+        .subtitle.hidden{ display:none; }
 
         .hint{
             font-size:14px;
-            opacity:.78;
+            opacity:.88;
             margin-top:2px;
+            color:#f2f6ff;
+            text-shadow:0 1px 4px rgba(0,0,0,.5);
         }
+        .hint.hidden{ display:none; }
 
         body::before{
             content:"";
@@ -189,18 +200,19 @@
             background:transparent;
             z-index:-1;
         }
-        /* заметно вторичное действие */
         .pdf-link{
             display:inline-block;
-            padding:8px 12px;
-            border-radius:12px;
-            border:1px solid rgba(255,255,255,.12);
-            background: rgba(20,24,34,.18);
-            color:#cfe1ff;
+            padding:10px 14px;
+            border-radius:14px;
+            border:0;
+            background: rgba(0,0,0,.45);
+            color:#f8fbff;
             text-decoration:none;
-            font-weight:650;
-            opacity:.95;
+            font-weight:700;
+            opacity:.98;
             -webkit-tap-highlight-color: transparent;
+            box-shadow:0 10px 26px rgba(0,0,0,.35);
+            text-shadow:0 2px 6px rgba(0,0,0,.55);
         }
         .pdf-link:active{ transform: translateY(1px); }
 
@@ -213,7 +225,7 @@
     <div class="slot">
         <div id="gateCard" class="glass-card" aria-label="Вам подарок">
             <div class="gate-title">Вам подарок</div>
-            <button id="openBtn" class="btn" type="button">Вам подарок</button>
+            <button id="openBtn" class="btn" type="button">Нажми на кнопку и получи подарок</button>
             <div class="gate-sub">
                 (Если хочешь спросить мошенники мы или нет, то мы скажем нет. Мы кабачки. Из высшего общества)
             </div>
@@ -236,7 +248,7 @@
     <div class="panel">
         <p id="subtitle" class="subtitle"></p>
         <a id="pdfLink" class="pdf-link hidden" href="certificate.pdf" download>Скачать PDF</a>
-        <div id="hint" class="hint">Шаг 0 из 2</div>
+        <div id="hint" class="hint"></div>
     </div>
 </div>
 
@@ -249,6 +261,7 @@
     const subtitle = document.getElementById('subtitle');
     const hint = document.getElementById('hint');
     const pdfLink = document.getElementById('pdfLink');
+    const panel = document.querySelector('.panel');
 
     const gateCard = document.getElementById('gateCard');
     const openBtn = document.getElementById('openBtn');
@@ -265,24 +278,32 @@
             stage.classList.add('hidden');
             card.classList.remove('opened','flipped');
             pdfLink.classList.add('hidden');
+            panel.classList.add('hidden');
             subtitle.textContent = '';
-            hint.textContent = 'Шаг 0 из 2';
+            subtitle.classList.add('hidden');
+            hint.textContent = '';
+            hint.classList.add('hidden');
             return;
         }
 
         gateCard.classList.add('hidden');
         stage.classList.remove('hidden');
         card.classList.add('opened');
+        panel.classList.remove('hidden');
 
         if(flipped){
             card.classList.add('flipped');
-            subtitle.textContent = 'Готово.';
-            hint.textContent = 'Сертификат открыт';
+            subtitle.textContent = '';
+            subtitle.classList.add('hidden');
+            hint.textContent = '';
+            hint.classList.add('hidden');
             pdfLink.classList.remove('hidden');
         } else {
             card.classList.remove('flipped');
             subtitle.textContent = 'Нажмите на сертификат, чтобы перевернуть.';
-            hint.textContent = 'Шаг 1 из 2';
+            subtitle.classList.remove('hidden');
+            hint.textContent = '';
+            hint.classList.add('hidden');
             pdfLink.classList.add('hidden');
         }
     }
@@ -331,3 +352,4 @@
 </script>
 </body>
 </html>
+
