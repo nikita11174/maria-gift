@@ -25,10 +25,11 @@
             min-height:100vh;
             min-height:100dvh;
             min-height:100svh;
-            display:grid;
-            place-items:center;
+            display:flex;
+            justify-content:center;
+            align-items:stretch;
             background:#0d1117 url("test_back.png") center/cover no-repeat;
-            padding-bottom: env(safe-area-inset-bottom, 0);
+            padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
         }
 
         /* затемняем фон, чтобы UI читался */
@@ -43,48 +44,41 @@
         }
 
         .wrap{
-            width:var(--w);
-            padding:26px 16px calc(18px + env(safe-area-inset-bottom, 0));
-            text-align:center;
-        }
-
-        #subtitle{
-            margin:0 0 14px;
-            opacity:.9;
-            line-height:1.35;
-            font-size:15px;
-            min-height: 1.35em; /* чтобы не "прыгало" */
-        }
-
-        /* стартовый экран: fullscreen overlay + bottom sheet */
-        .gate{
-            position:fixed;
-            inset:0;
-            z-index:10;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            padding:18vh 12px calc(16px + env(safe-area-inset-bottom, 0));
-            background: radial-gradient(1400px 680px at 50% 16%, rgba(31,111,235,.18), rgba(0,0,0,.38));
-            transition:opacity 260ms ease;
-        }
-        .gate.hidden{ opacity:0; pointer-events:none; visibility:hidden; }
-
-        .gate-inner{
-            width:min(92vw, 560px);
-            padding:22px 18px;
-            border-radius:18px;
-
-            background: rgba(18,22,31,.78);
-            backdrop-filter: blur(14px) saturate(150%);
-            -webkit-backdrop-filter: blur(14px) saturate(150%);
-            box-shadow:0 18px 70px rgba(0,0,0,.48);
-            transform: translateY(12vh);
-
+            width:100%;
+            max-width:var(--w);
+            padding:18px 16px 24px;
             display:flex;
             flex-direction:column;
-            gap:10px;
             align-items:center;
+            gap:14px;
+            min-height:100vh;
+            min-height:100dvh;
+            min-height:100svh;
+        }
+
+        .slot{
+            width:100%;
+            display:grid;
+            justify-items:center;
+            padding-top:24vh;
+            padding-bottom:10vh;
+        }
+
+        .glass-card{
+            width:100%;
+            aspect-ratio:16/10;
+            border-radius:18px;
+            background: rgba(18,22,31,.68);
+            backdrop-filter: blur(14px) saturate(140%);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            box-shadow:0 18px 70px rgba(0,0,0,.48);
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+            align-items:center;
+            justify-content:center;
+            padding:22px 18px;
+            text-align:center;
         }
 
         .gate-title{
@@ -96,7 +90,6 @@
             font-size:14px;
             line-height:1.35;
             max-width: 430px;
-            text-align:center;
         }
 
         .btn{
@@ -110,12 +103,12 @@
             box-shadow:0 10px 26px rgba(31,111,235,.22);
             text-decoration:none;
             display:inline-block;
+            -webkit-tap-highlight-color: transparent;
         }
         .btn:active{ transform: translateY(1px); }
 
         .stage{
-            margin:16px auto 0;
-            width:var(--w);
+            width:100%;
             aspect-ratio:16/10;
             perspective:1200px;
             border-radius:18px;
@@ -132,35 +125,15 @@
             touch-action: manipulation;
         }
 
-        /* плёнка */
-        .film{
-            position:absolute;
-            inset:0;
-            z-index:5;
-            background: linear-gradient(120deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
-            opacity:1;
-            transform: translateY(0);
-            transition: transform 520ms cubic-bezier(.2,.9,.2,1), opacity 520ms cubic-bezier(.2,.9,.2,1);
-            pointer-events:none;
-        }
-        .film.off{
-            transform: translateY(18px);
-            opacity:0;
-            pointer-events:none;
-        }
-
-        /* карточка */
         .card{
             width:100%;
             height:100%;
             opacity:0;
-            transform: translateY(18px) scale(.98);
+            transform: translateY(10px) scale(.98);
             transition: opacity 240ms ease, transform 240ms ease;
             pointer-events:none;
             position:relative;
-            z-index:4;
+            z-index:1;
         }
         .card.opened{
             opacity:1;
@@ -199,11 +172,19 @@
         .face.back img{ transform: scaleX(-1); }
 
         .panel{
-            margin-top:14px;
             display:flex;
             flex-direction:column;
             gap:10px;
             align-items:center;
+            text-align:center;
+        }
+
+        .subtitle{
+            margin:0;
+            opacity:.9;
+            line-height:1.35;
+            font-size:15px;
+            min-height: 1.35em;
         }
 
         .hint{
@@ -217,12 +198,13 @@
             display:inline-block;
             padding:8px 12px;
             border-radius:12px;
-            border:1px solid rgba(255,255,255,.14);
+            border:1px solid rgba(255,255,255,.12);
             background: rgba(20,24,34,.18);
             color:#cfe1ff;
             text-decoration:none;
             font-weight:650;
             opacity:.95;
+            -webkit-tap-highlight-color: transparent;
         }
         .pdf-link:active{ transform: translateY(1px); }
 
@@ -232,47 +214,39 @@
 
 <body>
 <div class="wrap">
-    <p id="subtitle">Нажмите кнопку, чтобы открыть подарок.</p>
+    <div class="slot">
+        <div id="gateCard" class="glass-card" aria-label="Вам подарок">
+            <div class="gate-title">Вам подарок</div>
+            <button id="openBtn" class="btn" type="button">Вам подарок</button>
+            <div class="gate-sub">
+                (Если хочешь спросить мошенники мы или нет, то мы скажем нет. Мы кабачки. Из высшего общества)
+            </div>
+        </div>
 
-    <div class="stage" aria-label="Сертификат">
-        <div id="film" class="film"></div>
-
-        <div id="card" class="card" aria-live="polite">
-            <div class="flip">
-                <div class="face front">
-                    <img src="front.png" alt="Лицевая сторона"/>
-                </div>
-                <div class="face back">
-                    <img src="back.png" alt="Оборотная сторона"/>
+        <div class="stage hidden" aria-label="Сертификат">
+            <div id="card" class="card" aria-live="polite">
+                <div class="flip">
+                    <div class="face front">
+                        <img src="front.png" alt="Лицевая сторона"/>
+                    </div>
+                    <div class="face back">
+                        <img src="back.png" alt="Оборотная сторона"/>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="panel">
+        <p id="subtitle" class="subtitle"></p>
         <a id="pdfLink" class="pdf-link hidden" href="certificate.pdf" download>Скачать PDF</a>
         <div id="hint" class="hint">Шаг 0 из 2</div>
     </div>
 </div>
 
-<!-- fullscreen gate overlay -->
-<div id="gate" class="gate" aria-label="Стартовый экран">
-    <div class="gate-inner" role="button" aria-label="Открыть подарок" tabindex="0">
-        <div class="gate-title">Вам подарок</div>
-        <button id="openBtn" class="btn" type="button">Вам подарок</button>
-        <div class="gate-sub">
-            (Если хочешь спросить мошенники мы или нет, то мы скажем нет. Мы кабачки. Из высшего общества)
-        </div>
-    </div>
-</div>
-
 <script>
     let opened = false;   // прошли стартовый экран
-    let flipped = false;  // на back (одноразово)
-    let lastTouchTs = 0;
-
-    // если нужно открывать телеграм со второго тапа на back — оставляем:
-    const TG_URL = 'https://t.me/DmitrySozonov2';
+    let flipped = false;  // перевернули сертификат
 
     const stage = document.querySelector('.stage');
     const card = document.getElementById('card');
@@ -280,10 +254,8 @@
     const hint = document.getElementById('hint');
     const pdfLink = document.getElementById('pdfLink');
 
-    const gate = document.getElementById('gate');
-    const gateInner = document.querySelector('.gate-inner');
+    const gateCard = document.getElementById('gateCard');
     const openBtn = document.getElementById('openBtn');
-    const film = document.getElementById('film');
     const hasPointer = 'PointerEvent' in window;
 
     // чтобы нажатие на PDF не улетало в обработчик stage
@@ -293,22 +265,18 @@
 
     function render(){
         if(!opened){
+            gateCard.classList.remove('hidden');
+            stage.classList.add('hidden');
             card.classList.remove('opened','flipped');
-            film.classList.remove('off');
-            gate.classList.remove('hidden');
-            gate.removeAttribute('aria-hidden');
             pdfLink.classList.add('hidden');
-
-            subtitle.textContent = 'Нажмите кнопку, чтобы открыть подарок.';
+            subtitle.textContent = '';
             hint.textContent = 'Шаг 0 из 2';
             return;
         }
 
-        // opened=true
+        gateCard.classList.add('hidden');
+        stage.classList.remove('hidden');
         card.classList.add('opened');
-        film.classList.add('off');
-        gate.classList.add('hidden');
-        gate.setAttribute('aria-hidden','true');
 
         if(flipped){
             card.classList.add('flipped');
@@ -323,50 +291,29 @@
         }
     }
 
-    function openGift(){
+    function openGift(event){
+        if(event){
+            event.preventDefault();
+            event.stopPropagation();
+        }
         if(opened) return;
         opened = true;
         render();
     }
 
-    function openTelegram(){
-        // в этой же вкладке
-        window.location.href = TG_URL;
-    }
-
     function handleTap(){
         if(!opened) return;
-
         if(!flipped){
             flipped = true;
             render();
-            return;
         }
-
-        // если НЕ нужно открывать Telegram со второго тапа — удали следующую строку
-        openTelegram();
     }
-
-    const handleOpen = (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        openGift();
-    };
 
     if(hasPointer){
-        openBtn.addEventListener('pointerup', handleOpen);
-        gateInner.addEventListener('pointerup', handleOpen);
+        openBtn.addEventListener('pointerup', openGift);
     } else {
-        openBtn.addEventListener('touchend', handleOpen, { passive:false });
-        gateInner.addEventListener('touchend', handleOpen, { passive:false });
-        openBtn.addEventListener('click', handleOpen);
-        gateInner.addEventListener('click', handleOpen);
+        openBtn.addEventListener('click', openGift);
     }
-    gateInner.addEventListener('keydown', (event) => {
-        if(event.key === 'Enter' || event.key === ' '){
-            handleOpen(event);
-        }
-    });
 
     const shouldIgnore = (target) => target.closest('a') || target.closest('button');
 
@@ -381,16 +328,7 @@
             onStageTap(event);
         });
     } else {
-        stage.addEventListener('touchend', (event) => {
-            lastTouchTs = Date.now();
-            event.preventDefault();
-            onStageTap(event);
-        }, { passive:false });
-
-        stage.addEventListener('click', (event) => {
-            if(Date.now() - lastTouchTs < 450) return;
-            onStageTap(event);
-        });
+        stage.addEventListener('click', onStageTap);
     }
 
     render();
