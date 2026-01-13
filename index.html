@@ -21,11 +21,21 @@
         }
 
         body {
+            margin: 0;
+            font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+            color: #f2f4f8;
+            min-height: 100vh;
+            min-height: 100dvh;
+            min-height: 100svh;
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
             background-color: #0d1117;
             background-image: url("test_back_1.png");
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
+            padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
         }
 
         /* Мобилка, портрет: показать фон целиком */
