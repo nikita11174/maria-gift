@@ -58,6 +58,10 @@
             flex-direction: column;
             align-items: center;
             gap: 6px;
+            min-height: 100vh;
+            min-height: 100dvh;
+            min-height: 100svh;
+
         }
 
         .slot {
@@ -450,6 +454,16 @@
             }
         }
 
+        /* ===== S2: confetti overlay ===== */
+        .confetti {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3; /* поверх карты, но ниже системных UI не нужно */
+        }
+
     </style>
 </head>
 
@@ -472,7 +486,10 @@
                     </div>
                 </div>
             </div>
+
+            <canvas id="confetti" class="confetti"></canvas>
         </div>
+
     </div>
 
     <div class="panel">
@@ -506,6 +523,7 @@
 
     const stage = document.querySelector('.stage');
     const card = document.getElementById('card');
+    const confettiCanvas = document.getElementById('confetti');
     const subtitle = document.getElementById('subtitle');
     const hint = document.getElementById('hint');
     const pdfLink = document.getElementById('pdfLink');
@@ -548,6 +566,7 @@
 
         gateCard.classList.add('hidden');
         stage.classList.remove('hidden');
+        resizeConfettiCanvas();
         card.classList.add('opened');
         panel.classList.remove('hidden');
 
@@ -568,6 +587,90 @@
         }
     }
 
+    let confettiRunning = false;
+
+    function resizeConfettiCanvas() {
+        if (!confettiCanvas) return;
+        const rect = stage.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        confettiCanvas.width = Math.max(1, Math.floor(rect.width * dpr));
+        confettiCanvas.height = Math.max(1, Math.floor(rect.height * dpr));
+    }
+
+    function launchConfetti(durationMs = 900) {
+        // уважим reduce motion
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        if (!confettiCanvas || confettiRunning) return;
+
+        confettiRunning = true;
+        resizeConfettiCanvas();
+
+        const ctx = confettiCanvas.getContext('2d');
+        const W = confettiCanvas.width;
+        const H = confettiCanvas.height;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        // “неоновые” конфетти
+        const palette = [
+            '#ff3b30', '#ff9500', '#ffcc00',
+            '#34c759', '#0a84ff', '#5e5ce6', '#ff2d55'
+        ];
+
+        const n = 80; // количество частиц
+        const particles = Array.from({length: n}, () => {
+            const x = Math.random() * W;
+            const y = -Math.random() * (H * 0.3);
+            const size = (6 + Math.random() * 10) * dpr;
+            return {
+                x, y,
+                vx: (-1 + Math.random() * 2) * 2.2 * dpr,
+                vy: (2.2 + Math.random() * 3.2) * dpr,
+                g: (0.11 + Math.random() * 0.18) * dpr,
+                r: size,
+                rot: Math.random() * Math.PI,
+                vr: (-0.18 + Math.random() * 0.36),
+                color: palette[(Math.random() * palette.length) | 0],
+                alpha: 1
+            };
+        });
+
+        const t0 = performance.now();
+
+        function frame(t) {
+            const elapsed = t - t0;
+            ctx.clearRect(0, 0, W, H);
+
+            // лёгкое затухание к концу
+            const k = Math.max(0, 1 - elapsed / durationMs);
+
+            for (const p of particles) {
+                p.vy += p.g;
+                p.x += p.vx;
+                p.y += p.vy;
+                p.rot += p.vr;
+                p.alpha = k;
+
+                // рисуем прямоугольнички-конфетти
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot);
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.r * 0.5, -p.r * 0.25, p.r, p.r * 0.5);
+                ctx.restore();
+            }
+
+            if (elapsed < durationMs) {
+                requestAnimationFrame(frame);
+            } else {
+                ctx.clearRect(0, 0, W, H);
+                confettiRunning = false;
+            }
+        }
+
+        requestAnimationFrame(frame);
+    }
+
     function openGift(event) {
         if (event) {
             event.preventDefault();
@@ -575,12 +678,12 @@
         }
         if (opened) return;
         opened = true;
-
-// S1: блик по карте один раз
-        stage.classList.add('shine');
-        setTimeout(() => stage.classList.remove('shine'), 1000);
-
         render();
+
+        requestAnimationFrame(() => {
+            stage.classList.add('shine');
+            setTimeout(() => stage.classList.remove('shine'), 950);
+        });
 
     }
 
@@ -590,8 +693,10 @@
         if (!flipped) {
             flipped = true;
             render();
+            launchConfetti(1500); // S2 эффект
             return;
         }
+
 
         // S2: открываем Telegram в этой же вкладке
         window.location.href = TG_URL;
@@ -651,6 +756,11 @@
     } else {
         stage.addEventListener('click', onStageTap);
     }
+
+    window.addEventListener('resize', () => {
+        if (!opened) return;
+        resizeConfettiCanvas();
+    });
 
     render();
 </script>
