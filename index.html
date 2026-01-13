@@ -51,13 +51,17 @@
             width: 100%;
             display: grid;
             justify-items: center;
-            padding-top: 24vh;
-            padding-bottom: 0;
+            /* занимать доступную высоту экрана */
+            flex: 1;
+            align-content: end; /* прижимаем контент вниз */
+            padding: 10vh 0 6vh; /* “ниже”, но без убийства экрана */
+            box-sizing: border-box;
         }
+
 
         .glass-card {
             width: 100%;
-            aspect-ratio: 16/10;
+            aspect-ratio: 3 / 2;
             border-radius: 18px;
             background: transparent;
             backdrop-filter: none;
@@ -70,6 +74,7 @@
             justify-content: center;
             padding: 22px 18px;
             text-align: center;
+            max-height: 58dvh;
         }
 
         .gate-title {
@@ -104,7 +109,7 @@
 
         .stage {
             width: 100%;
-            aspect-ratio: 16/10;
+            aspect-ratio: 3 / 2;
             perspective: 1200px;
             border-radius: 18px;
             overflow: hidden;
@@ -118,6 +123,7 @@
             -webkit-user-select: none;
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
+            max-height: 58dvh;
         }
 
         .card {
@@ -176,10 +182,10 @@
         .panel {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
             text-align: center;
-            margin-top: -4px;
+            margin-top: 6px;
         }
 
         .panel.hidden {
@@ -298,7 +304,6 @@
     const openBtn = document.getElementById('openBtn');
     const hasPointer = 'PointerEvent' in window;
 
-    // чтобы нажатие на PDF не улетало в обработчик stage
     const stopPropagation = (e) => e.stopPropagation();
     pdfLink.addEventListener('pointerup', stopPropagation);
     pdfLink.addEventListener('click', stopPropagation);
